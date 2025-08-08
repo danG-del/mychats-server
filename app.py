@@ -1,8 +1,10 @@
 # app.py — El núcleo del backend WebSocket
 # 🧠 Narrador: "El servidor despierta. Las líneas están abiertas."
 
+
 import asyncio
 import websockets
+import os
 
 connected_clients = set()
 
@@ -12,7 +14,6 @@ async def handler(websocket):
     try:
         async for message in websocket:
             print(f"[RECEIVED] {message}")
-            # 🧠 Narrador: "Replicamos el mensaje. Todos lo ven."
             for client in connected_clients:
                 if client != websocket:
                     await client.send(message)
@@ -23,9 +24,10 @@ async def handler(websocket):
         print("[DISCONNECTED] Cliente desconectado")
 
 async def main():
-    print("[STARTING] Servidor WebSocket en puerto 8001")
-    async with websockets.serve(handler, "0.0.0.0", 8001):
-        await asyncio.Future()  # Mantiene el servidor corriendo
+    port = int(os.environ.get("PORT", 8001))  # Render asigna el puerto en PORT
+    print(f"[STARTING] Servidor WebSocket en puerto {port}")
+    async with websockets.serve(handler, "0.0.0.0", port):
+        await asyncio.Future()
 
 if __name__ == "__main__":
     asyncio.run(main())
